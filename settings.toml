@@ -10,4 +10,4 @@ toxicity = 0.99
 severe_toxicity = 0.9
 identity_attack = 0.9
 insult = 0.9
-threat = 0.9
+threat = 0.97
