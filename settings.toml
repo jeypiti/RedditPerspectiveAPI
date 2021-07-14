@@ -1,0 +1,13 @@
+subreddit = "Rainbow6"
+mod_username = "R6Bot"
+stream_username = "comment_stream"
+
+author = "u/jeypiti"
+version = "0.1.0"
+
+[threshold]
+toxicity = 0.99
+severe_toxicity = 0.9
+identity_attack = 0.9
+insult = 0.9
+threat = 0.9
