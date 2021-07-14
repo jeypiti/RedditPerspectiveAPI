@@ -74,7 +74,7 @@ async def evaluate_comment(comment: Comment) -> dict[str, float]:
 
     async with aiohttp.ClientSession() as session:
         # sleep to avoid hitting rate limit
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1)
         async with session.post(url, json=params) as response:
             response_dict = await response.json()
 
