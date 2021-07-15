@@ -21,7 +21,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(logging.Formatter(fmt="[{levelname}] {message}", style="{"))
 stream_handler.setLevel(logging.DEBUG)
 
-discord_handler = DiscordWebhookHandler(config.webhook, min_emit_interval=10.)
+discord_handler = DiscordWebhookHandler(config.webhook, min_emit_interval=0.)
 discord_handler.setFormatter(
     logging.Formatter(
         fmt="[{levelname} | {asctime}] {message}",
@@ -29,7 +29,7 @@ discord_handler.setFormatter(
         style="{",
     )
 )
-discord_handler.setLevel(logging.DEBUG)
+discord_handler.setLevel(logging.INFO)
 
 logger.addHandler(stream_handler)
 logger.addHandler(discord_handler)
