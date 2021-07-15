@@ -9,6 +9,7 @@ from asyncpraw import Reddit
 from asyncpraw.models import Comment
 from asyncprawcore.exceptions import ServerError
 from dynaconf import Dynaconf
+
 from discord_logging import DiscordWebhookHandler
 
 config = Dynaconf(settings_files=["settings.toml", ".secrets.toml"])
