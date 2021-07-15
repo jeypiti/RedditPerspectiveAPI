@@ -9,9 +9,29 @@ from asyncpraw import Reddit
 from asyncpraw.models import Comment
 from asyncprawcore.exceptions import ServerError
 from dynaconf import Dynaconf
+from discord_logging import DiscordWebhookHandler
 
-logging.basicConfig(format="[{levelname}] {message}", style="{", level=logging.INFO)
 config = Dynaconf(settings_files=["settings.toml", ".secrets.toml"])
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(logging.Formatter(fmt="[{levelname}] {message}", style="{"))
+stream_handler.setLevel(logging.DEBUG)
+
+discord_handler = DiscordWebhookHandler(config.webhook, min_emit_interval=10.)
+discord_handler.setFormatter(
+    logging.Formatter(
+        fmt="[{levelname} | {asctime}] {message}",
+        datefmt="%Y-%m-%d %H:%M:%S %Z",
+        style="{",
+    )
+)
+discord_handler.setLevel(logging.DEBUG)
+
+logger.addHandler(stream_handler)
+logger.addHandler(discord_handler)
 
 url = f"https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={config.credentials.perspective.api_key}"
 params = {
@@ -33,7 +53,7 @@ async def authenticate_reddit(username: str) -> Reddit:
         user_agent=f"web:mod.{config.subreddit}.{username}.Perspective:v{config.version} by {config.author})",
         **config.credentials[username],
     )
-    logging.info(f"Authenticated as {await reddit_instance.user.me()}!")
+    logger.info(f"Authenticated as {await reddit_instance.user.me()}!")
 
     return reddit_instance
 
@@ -50,16 +70,16 @@ async def main():
 
         except ServerError as e:
             sleep_duration = randint(25, 35)
-            logging.warning(f"Server error, retrying in {sleep_duration}s", exc_info=e)
+            logger.warning(f"Server error, retrying in {sleep_duration}s", exc_info=e)
             await asyncio.sleep(sleep_duration)
 
 
 async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
-    logging.info(f"Comment ID: {comment.id}")
+    logger.info(f"Comment ID: {comment.id}")
     results = await evaluate_comment(comment)
 
     for attribute, score in results.items():
-        logging.info(f"{attribute:16s}: {score:7.2%}")
+        logger.info(f"{attribute:16s}: {score:7.2%}")
         if score >= config.threshold[attribute]:
             # handoff to mod account to enable free-form report
             comment = await mod_reddit.comment(comment.id, lazy=True)
@@ -70,7 +90,7 @@ async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
 
 async def evaluate_comment(comment: Comment) -> dict[str, float]:
     params["comment"] = {"text": comment.body}
-    logging.info(f"Comment body: {comment.body}")
+    logger.info(f"Comment body: {comment.body}")
 
     async with aiohttp.ClientSession() as session:
         # sleep to avoid hitting rate limit
