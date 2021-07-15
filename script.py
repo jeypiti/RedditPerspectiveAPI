@@ -74,6 +74,10 @@ async def main():
             logger.warning(f"Server error, retrying in {sleep_duration}s", exc_info=e)
             await asyncio.sleep(sleep_duration)
 
+        except Exception as e:
+            logger.error(f"Encountered exception:", exc_info=e)
+            raise e
+
 
 async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
     logger.info(f"Comment ID: {comment.id}")
