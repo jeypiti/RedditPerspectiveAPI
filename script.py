@@ -82,9 +82,10 @@ async def main():
 async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
     results = await evaluate_comment(comment)
 
+    cleaned_permalink = comment.permalink.replace(comment.permalink.split("/")[5], "_")
     log_content = (
         f"New comment {comment.id} by {comment.author}\n"
-        f"https://www.reddit.com/{comment.permalink}\n"
+        f"https://www.reddit.com{cleaned_permalink}\n"
         f"{comment.body[:1500]}\n\n"
     )
     log_func = logger.debug
