@@ -82,7 +82,7 @@ async def main():
 async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
     results = await evaluate_comment(comment)
 
-    log_content = f"\nComment ID: {comment.id}\n{comment.body[:1500]}\n\n"
+    log_content = f"New comment\nComment ID: {comment.id}\n{comment.body[:1500]}\n\n"
     log_func = logger.debug
 
     for attribute, score in results.items():
