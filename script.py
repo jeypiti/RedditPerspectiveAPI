@@ -80,22 +80,27 @@ async def main():
 
 
 async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
-    logger.info(f"Comment ID: {comment.id}")
     results = await evaluate_comment(comment)
 
+    log_content = f"\nComment ID: {comment.id}\n{comment.body[:1500]}\n\n"
+    log_func = logger.debug
+
     for attribute, score in results.items():
-        logger.info(f"{attribute:16s}: {score:7.2%}")
+        log_content += f"{attribute:16s}: {score:7.2%}\n"
         if score >= config.threshold[attribute]:
+            log_func = logger.info
+
             # handoff to mod account to enable free-form report
             comment = await mod_reddit.comment(comment.id, lazy=True)
             await comment.report(
                 f"{attribute}: {score:.2%} | threshold: {config.threshold[attribute]:.2%}"
             )
 
+    log_func(log_content)
+
 
 async def evaluate_comment(comment: Comment) -> dict[str, float]:
     params["comment"] = {"text": comment.body}
-    logger.info(f"Comment body: {comment.body}")
 
     async with aiohttp.ClientSession() as session:
         # sleep to avoid hitting rate limit
