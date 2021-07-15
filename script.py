@@ -86,7 +86,7 @@ async def process_comment(comment: Comment, mod_reddit: Reddit) -> None:
     log_func = logger.debug
 
     for attribute, score in results.items():
-        log_content += f"{attribute:16s}: {score:7.2%}\n"
+        log_content += f"{attribute:16s}: {score:6.2%}\n"
         if score >= config.threshold[attribute]:
             log_func = logger.info
 
