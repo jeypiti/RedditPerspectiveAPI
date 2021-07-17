@@ -2,3 +2,4 @@ asyncpraw
 asyncprawcore
 dynaconf
 requests
+git+https://github.com/jeypiti/DiscordLogging.git
