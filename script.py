@@ -20,19 +20,19 @@ logger.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(logging.Formatter(fmt="[{levelname}] {message}", style="{"))
 stream_handler.setLevel(logging.DEBUG)
-
-discord_handler = DiscordWebhookHandler(config.webhook, min_emit_interval=0.0)
-discord_handler.setFormatter(
-    logging.Formatter(
-        fmt="[{levelname} | {asctime}] {message}",
-        datefmt="%Y-%m-%d %H:%M:%S %Z",
-        style="{",
-    )
-)
-discord_handler.setLevel(logging.INFO)
-
 logger.addHandler(stream_handler)
-logger.addHandler(discord_handler)
+
+if config.webhook:
+    discord_handler = DiscordWebhookHandler(config.webhook, min_emit_interval=0.0)
+    discord_handler.setFormatter(
+        logging.Formatter(
+            fmt="[{levelname} | {asctime}] {message}",
+            datefmt="%Y-%m-%d %H:%M:%S %Z",
+            style="{",
+        )
+    )
+    discord_handler.setLevel(logging.INFO)
+    logger.addHandler(discord_handler)
 
 url = f"https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={config.credentials.perspective.api_key}"
 params = {
