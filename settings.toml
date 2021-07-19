@@ -7,7 +7,7 @@ version = "0.1.0"
 
 [threshold]
 toxicity = 0.99
-severe_toxicity = 0.9
+severe_toxicity = 0.87
 identity_attack = 0.9
 insult = 0.9
 threat = 0.97
